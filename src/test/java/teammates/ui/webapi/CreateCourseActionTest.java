@@ -123,5 +123,37 @@ public class CreateCourseActionTest extends BaseActionTest<CreateCourseAction> {
 
         verifyCannotAccess(submissionParams);
     }
+    @Test
+    public void testCreateCourseWithInvalidName() {
+        String[] submissionParams = {
+            Const.ParamsNames.INSTRUCTOR_INSTITUTION, "TEAMMATES Test Institute 1",
+        };
+
+        CourseCreateRequest courseCreateRequest = new CourseCreateRequest();
+        courseCreateRequest.setCourseName("A"); // Nome de curso muito curto
+        courseCreateRequest.setTimeZone("UTC");
+        courseCreateRequest.setCourseId("valid-course-id");
+
+        InvalidOperationException thrown = expectThrows(InvalidOperationException.class,
+            () -> getAction(courseCreateRequest, submissionParams).execute());
+        assertTrue(thrown.getMessage().contains("Nome do curso muito curto"));
+    }
+
+    @Test
+    public void testCreateCourseWithInvalidId() {
+        String[] submissionParams = {
+            Const.ParamsNames.INSTRUCTOR_INSTITUTION, "TEAMMATES Test Institute 1",
+        };
+
+        CourseCreateRequest courseCreateRequest = new CourseCreateRequest();
+        courseCreateRequest.setCourseName("Engenharia de software");
+        courseCreateRequest.setTimeZone("UTC");
+        courseCreateRequest.setCourseId("id inválido com espaços");
+
+        InvalidOperationException thrown = expectThrows(InvalidOperationException.class,
+            () -> getAction(courseCreateRequest, submissionParams).execute());
+        assertTrue(thrown.getMessage().contains("ID do curso não deve conter espaços"));
+    }
+
 
 }
